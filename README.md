@@ -102,19 +102,29 @@ from selenium.webdriver.support.wait import WebDriverWait
 import json
 import time
 import csv
-#保存信息函数
+#保存信息函数CSV
 def write_to_csv(csv_file, csv_input):
     with open(csv_file, 'w', encoding='utf8',newline='') as wf:
         writer = csv.writer(wf)
         writer.writerows(csv_input)
+    wf.close()
+
+#保存信息函数TXT
+def write_to_file(txt_file, txt_input):
+    with open(txt_file, 'w', encoding='utf-8') as wf:
+        for i in txt_input:
+            for j in i:
+                wf.write(j + '\n')
+    wf.close()
+
 
 #任务：爬取2页或多页指定URL的文章摘要
-def main(pageNumber):
+def main(pageNumber, search_url):
     result = []
     browser = webdriver.Chrome()
     browser.implicitly_wait(200)#这是延时等待。由于网速时快时慢，而get方法会在网页框架加载结束后停止执行，
     #这就会导致有些时候我们打算获取的内容还没被加载进来便结束了获取页面数据，最后报错，拿不到想要的数据。
-    url = 'https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=kyber&highlight=true&returnFacets=ALL&returnType=SEARCH&matchPubs=true&pageNumber='+str(pageNumber)
+    url = search_url+str(pageNumber)
     browser.get(url)
     #遇到class name中的复合情况（即有多个class name中间是空格隔开的）
     #选取其中一个具有全局唯一性的class name即可准确定位所要查找的结点内容
@@ -124,10 +134,14 @@ def main(pageNumber):
         #对于需要点击才显示出来的页面内容（隐藏内容）需要使用下面的方法获取文本信息
         content = browser.execute_script("return arguments[0].textContent", AbstractList[i])
         href = browser.execute_script("return arguments[0].href", HrefList[i])
-        result.append((href,content))
+        title = browser.execute_script("return arguments[0].textContent",HrefList[i])
+        result.append((href, title, content,))
     return result
  
 if __name__ == "__main__":
+    #https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=kyber&highlight=true&returnFacets=ALL&returnType=SEARCH&matchPubs=true&pageNumber=2
+    #以上面的链接为例,去年最后的页码2,即是下面的url链接
+    url = 'https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=kyber&highlight=true&returnFacets=ALL&returnType=SEARCH&matchPubs=true&pageNumber='
     for i in range(2):
         j = i + 1
         result = main(pageNumber = j)
