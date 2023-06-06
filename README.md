@@ -115,6 +115,7 @@ def write_to_file(txt_file, txt_input):
         for i in txt_input:
             for j in i:
                 wf.write(j + '\n')
+            wf.write('\n\n')
     wf.close()
 
 
@@ -144,8 +145,9 @@ if __name__ == "__main__":
     url = 'https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=kyber&highlight=true&returnFacets=ALL&returnType=SEARCH&matchPubs=true&pageNumber='
     for i in range(2):
         j = i + 1
-        result = main(pageNumber = j)
+        result = main(pageNumber = j, search_url=url)
         write_to_csv('fs.csv', result)
+        write_to_file('fs.txt', result)
         #time.sleep(1)#有些网站有反爬虫机制，如果访问间隔时间很短则不会响应。
 ```
 爬的是这2个class，是因为对应的是文章链接和摘要
